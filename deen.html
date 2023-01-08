@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>deen.ai</title>
+
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/water.css@2/out/water.css">
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Kanit:wght@400;700&display=swap');
+
+    * {
+      font-family: 'Kanit', sans-serif;
+    }
+  
+    /* https://coolors.co/palette/eef0f2-c8c9cb-bee8e5-3d736e-1e3937 */
+    :root {
+      --background-body: #1e3937;
+      --background: #1e3937;
+      --background-alt: #3d736e;
+      --text-main: #c8c9cb;
+      --text-bright: #eef0f2;
+      --text-muted: #c8c9cb;
+      --form-placeholder: #6d6e70;
+      --scrollbar-thumb: #c8c9cb;
+      --scrollbar-thumb-hover: #eef0f2;
+      --links: #bee8e5;
+      --focus: #a9b0b3;
+      --border: #a9b0b3;
+      --button-hover: #a9b0b3;
+      --content-width: min(calc(100vw - 2rem), 800px);
+      --button-base: #3d736e;
+    }
+
+    textarea {
+      border: 1px solid var(--border);
+    }
+
+    button {
+      border-radius: 9999px;
+    }
+
+    .content {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .flex-row {
+      display: flex;
+      flex-direction: row;
+    }
+    .flex-col {
+      display: flex;
+      flex-direction: column;
+    }
+    .w-full {
+      width: 100%;
+    }
+    .justify-center {
+      justify-content: center;
+    }
+    .items-center {
+      align-items: center;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+  </style>
+
+</head>
+
+<body>
+  <h1>deen.ai</h1>
+
+  <div style="position: relative; width: 100%;">
+    <div id="page-1" class="content">
+      <p>I am an AI trained on the Qur'an, hadiths, and thousands of scholarly texts. Please ask me anything!</p>
+      <div class="flex-col w-full">
+        <textarea id="prompt" name="prompt" type="text" placeholder="e.g. &quot;What does Islam say about AI?&quot;"
+          autofocus></textarea>
+        <div class="flex-row justify-center w-full" style="margin-top: 16px;">
+          <button id="askButton" style="flex-grow: 1; max-width: 400px;" disabled>Ask</button>
+        </div>
+      </div>
+    </div>
+  
+
+    <div id="page-2" class="content hidden">
+      <div class="w-full flex-col items-center htmx-indicator" style="padding: 16px;">
+        <img width="64" height="64" src="puff.svg">
+        <p style="display: inline;">Thinking...</p>
+      </div>
+    </div>
+
+    <div id="page-3" class="content hidden">
+      <p id="answer"></p>
+      <div class="flex-row justify-center w-full" style="margin-top: 16px;">
+        <button id="retryButton" style="flex-grow: 1; max-width: 400px;">Ask again</button>
+      </div>
+    </div>
+  
+  </div>
+
+  <script>
+    document.getElementById('prompt').addEventListener('input', () => {
+      const prompt = document.getElementById('prompt').value;
+      document.getElementById('askButton').disabled = prompt.length == 0;
+    });
+
+    document.getElementById('retryButton').addEventListener('click', e => {
+      e.preventDefault();
+      document.getElementById('page-3').classList.add('hidden');
+      document.getElementById('page-1').classList.remove('hidden');
+      document.getElementById('prompt').focus();
+      document.getElementById('askButton').disabled = false;
+    });
+
+    document.getElementById('askButton').addEventListener('click', async e => {
+      e.preventDefault();
+
+      document.getElementById('page-1').classList.add('hidden');
+      document.getElementById('page-2').classList.remove('hidden');
+
+      const promptEl = document.getElementById('prompt');
+      const prompt = promptEl.value;
+      // promptEl.value = '';
+      // document.getElementById('askButton').disabled = true;
+
+      try {
+        const response = await fetch('https://red.amar.io/deen/prompt', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ prompt }),
+        });
+
+        const answer = await response.text();
+        console.log(answer);
+        document.getElementById('answer').innerText = answer;
+      } catch (error) {
+        console.error(error);
+        alert("Something went wrong! Please try again.");
+        document.getElementById('page-2').classList.add('hidden');
+        document.getElementById('page-1').classList.remove('hidden');
+        return;
+      }
+
+      document.getElementById('page-2').classList.add('hidden');
+      document.getElementById('page-3').classList.remove('hidden');
+    });
+
+    
+
+  </script>
+</body>
+
+</html>
