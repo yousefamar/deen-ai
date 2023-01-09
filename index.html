@@ -8,6 +8,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/water.css@2/out/water.css">
+  <script src="https://unpkg.com/canvas-txt@3.0.0/build/index.js"></script>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Kanit:wght@400;700&display=swap');
 
@@ -34,7 +35,7 @@
       --button-base: #3d736e;
     }
 
-    textarea {
+    textarea, input {
       border: 1px solid var(--border);
     }
 
@@ -73,17 +74,20 @@
       display: none;
     }
 
+    canvas {
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+    }
+
   </style>
 
 </head>
 
 <body>
-  <img src="logo.svg" style="width: 2.5em; height: 2.5em;"/>
-  <h1 style="display: inline">deen.ai</h1>
+  <img src="logo-with-text.svg" style="height: 2.5em;"/>
 
   <div style="position: relative; width: 100%;">
     <div id="page-1" class="content">
-      <p>I am an AI trained on the Qur'an, hadiths, and thousands of scholarly texts. Please ask me anything!</p>
+      <p>I am an AI trained on the Qur'an, hadiths, and thousands of scholarly texts. Please ask me anything! But keep in mind that I'm still learning and may struggle with complex topics, so please follow up with humans!</p>
       <div class="flex-col w-full">
         <textarea id="prompt" name="prompt" type="text" placeholder="e.g. &quot;What does Islam say about AI?&quot;"
           autofocus></textarea>
@@ -102,10 +106,39 @@
     </div>
 
     <div id="page-3" class="content hidden">
-      <p id="answer"></p>
+      <!-- <p id="answer"></p> -->
+      <canvas id="shareCanvas" width="1080" height="1080"></canvas>
+      <div class="flex-row justify-center w-full" style="margin-top: 16px;">
+        <button id="shareButton" style="flex-grow: 1; max-width: 400px;">Share</button>
+      </div>
       <div class="flex-row justify-center w-full" style="margin-top: 16px;">
         <button id="retryButton" style="flex-grow: 1; max-width: 400px;">Ask again</button>
       </div>
+      <!-- <div id="mc_embed_signup">
+        <form
+          action="https://deen.us21.list-manage.com/subscribe/post?u=048d7c09b5ea13b09579d6fa1&amp;id=51d2c0ad23&amp;f_id=0042d6e1f0"
+          method="post" id="mc-embedded-subscribe-form" name="mc-embedded-subscribe-form" class="validate" target="_self">
+          <div id="mc_embed_signup_scroll">
+      
+            <div class="mc-field-group">
+              <label for="mce-EMAIL">Email Address</label>
+              <input type="email" value="" name="EMAIL" class="required email" id="mce-EMAIL" required>
+              <span id="mce-EMAIL-HELPERTEXT" class="helper_text"></span>
+            </div>
+            <div id="mce-responses" class="clear foot">
+              <div class="response" id="mce-error-response" style="display:none"></div>
+              <div class="response" id="mce-success-response" style="display:none"></div>
+            </div>
+            <div style="position: absolute; left: -5000px;" aria-hidden="true"><input type="text"
+                name="b_048d7c09b5ea13b09579d6fa1_51d2c0ad23" tabindex="-1" value=""></div>
+            <div class="optionalParent">
+              <div class="clear foot">
+                <input type="submit" value="Subscribe" name="subscribe" id="mc-embedded-subscribe" class="button">
+              </div>
+            </div>
+          </div>
+        </form>
+      </div> -->
     </div>
   
   </div>
@@ -124,6 +157,84 @@
       document.getElementById('askButton').disabled = false;
     });
 
+    function dataURItoBlob(dataURI) {
+      const binary = atob(dataURI.split(',')[1]);
+      const array = [];
+      for (let i = 0; i < binary.length; i++)
+        array.push(binary.charCodeAt(i));
+      return new Blob([new Uint8Array(array)], { type: 'image/png' });
+    }
+
+    document.getElementById('shareButton').addEventListener('click', e => {
+      e.preventDefault();
+
+      const canvas = document.getElementById('shareCanvas');
+      const dataURL = canvas.toDataURL('image/png');
+
+      if (navigator.share) {
+        const blob = dataURItoBlob(dataURL);
+        navigator.share({
+          title: 'deen.ai',
+          text: 'deen.ai, an islamic AI, answered my question!',
+          files: [ blob ],
+        });
+      } else {
+        const a = document.createElement('a');
+        a.href = dataURL;
+        a.download = 'deen-ai.png';
+        a.click();
+      }
+    });
+
+    const computeFontSize = (ctx, text, x, y, width, maxHeight) => {
+      const canvasTxt = window.canvasTxt.default
+      let fontSize = 100;
+      canvasTxt.fontSize = fontSize;
+
+      let h;
+      do {
+        fontSize -= 10;
+        canvasTxt.fontSize = fontSize;
+        const { height } = canvasTxt.drawText(ctx, text, 40, 40, 1000, maxHeight);
+        h = height;
+      } while (h > maxHeight);
+
+      return [ fontSize, h ];
+    };
+
+    const renderShareCanvas = (prompt, answer) => new Promise(resolve => {
+      const canvas = document.getElementById('shareCanvas');
+      const ctx = canvas.getContext('2d');
+
+      const img = new Image();
+      img.src = 'share-template.png';
+      img.onload = () => {
+        ctx.fillStyle = '#eef0f2';
+        ctx.textAlign = 'center';
+        const canvasTxt = window.canvasTxt.default
+        canvasTxt.font = 'Kanit';
+
+        const [ fontSizePrompt ] = computeFontSize(ctx, prompt, 40, 40, 1000, 210);
+        const [ fontSizeAnswer, heightAnswer ] = computeFontSize(ctx, answer, 40, 350, 1000, 640);
+
+        ctx.drawImage(img, 0, 0);
+
+        // ctx.strokeStyle = '#f00';
+        // ctx.lineWidth = 1;
+        // ctx.strokeRect(40, 40, 1000, 210);
+        // ctx.strokeRect(40, 350, 1000, 640);
+
+        ctx.fillStyle = '#c8c9cb';
+        canvasTxt.fontSize = fontSizePrompt;
+        canvasTxt.drawText(ctx, prompt, 40, 40, 1000, 210);
+        ctx.fillStyle = '#eef0f2';
+        canvasTxt.fontSize = fontSizeAnswer;
+        canvasTxt.drawText(ctx, answer, 40, 350, 1000, heightAnswer);
+
+        resolve();
+      }
+    });
+
     document.getElementById('askButton').addEventListener('click', async e => {
       e.preventDefault();
 
@@ -134,6 +245,7 @@
       const prompt = promptEl.value;
       // promptEl.value = '';
       // document.getElementById('askButton').disabled = true;
+      let answer;
 
       try {
         const response = await fetch('https://red.amar.io/deen/prompt', {
@@ -142,9 +254,8 @@
           body: JSON.stringify({ prompt }),
         });
 
-        const answer = await response.text();
-        console.log(answer);
-        document.getElementById('answer').innerText = answer;
+        answer = await response.text();
+        // document.getElementById('answer').innerText = answer;
       } catch (error) {
         console.error(error);
         alert("Something went wrong! Please try again.");
@@ -153,13 +264,11 @@
         return;
       }
 
+      await renderShareCanvas(prompt, answer);
+
       document.getElementById('page-2').classList.add('hidden');
       document.getElementById('page-3').classList.remove('hidden');
     });
 
-    
-
   </script>
 </body>
-
-</html>
