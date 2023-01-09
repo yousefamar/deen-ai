@@ -35,12 +35,18 @@
       --button-base: #3d736e;
     }
 
+    body {
+      max-width: 500px;
+    }
+
     textarea, input {
       border: 1px solid var(--border);
     }
 
     button {
       border-radius: 9999px;
+      max-width: 200px;
+      flex-grow: 1;
     }
 
     .content {
@@ -76,8 +82,8 @@
 
     canvas {
       box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+      margin-top: 30px;
     }
-
   </style>
 
 </head>
@@ -109,38 +115,46 @@
       <!-- <p id="answer"></p> -->
       <canvas id="shareCanvas" width="1080" height="1080"></canvas>
       <div class="flex-row justify-center w-full" style="margin-top: 16px;">
-        <button id="shareButton" style="flex-grow: 1; max-width: 400px;">Share</button>
+        <button id="shareButton" style="flex-grow: 1;">Share</button>
       </div>
-      <div class="flex-row justify-center w-full" style="margin-top: 16px;">
-        <button id="retryButton" style="flex-grow: 1; max-width: 400px;">Ask again</button>
+      <p>I hope my answer was useful to you insha'Allah! Please support this project by sharing your answer, or joining my mailing list for free to stay up to date on projects like this where Islam and technology intersect.</p>
+      <script async data-uid="50a6261ec3" src="https://crafty-innovator-9499.ck.page/50a6261ec3/index.js"></script>
+      <style>
+        .formkit-form[data-uid="50a6261ec3"] .formkit-powered-by-convertkit-container {
+          display: none;
+        }
+        .formkit-form[data-uid="50a6261ec3"] {
+          max-width: 100%;
+        }
+        .formkit-form[data-uid="50a6261ec3"][min-width~="700"] [data-style="clean"],
+        .formkit-form[data-uid="50a6261ec3"][min-width~="800"] [data-style="clean"] {
+          padding: 0;
+        }
+        .formkit-form[data-uid="50a6261ec3"] .formkit-input {
+          background-color: var(--background);
+        }
+        .formkit-form[data-uid="50a6261ec3"] .formkit-input::placeholder {
+          color: var(--form-placeholder);
+        }
+        .formkit-form[data-uid="50a6261ec3"] ul:not([template-default]) {
+          color: #ea4110;
+        }
+        .formkit-form[data-uid="50a6261ec3"] .formkit-fields {
+          flex-wrap: nowrap;
+        }
+        .formkit-form[data-uid="50a6261ec3"] .formkit-field {
+          flex: 1;
+        }
+        .formkit-form[data-uid="50a6261ec3"] .formkit-submit {
+          flex: 1;
+          flex-shrink: 1;
+          margin-left: 16px;
+        }
+      </style>
+      <div class="flex-row justify-center w-full" style="margin-top: 16px; margin-bottom: 16px;">
+        <button id="retryButton" style="flex-grow: 1;">Ask again</button>
       </div>
-      <!-- <div id="mc_embed_signup">
-        <form
-          action="https://deen.us21.list-manage.com/subscribe/post?u=048d7c09b5ea13b09579d6fa1&amp;id=51d2c0ad23&amp;f_id=0042d6e1f0"
-          method="post" id="mc-embedded-subscribe-form" name="mc-embedded-subscribe-form" class="validate" target="_self">
-          <div id="mc_embed_signup_scroll">
-      
-            <div class="mc-field-group">
-              <label for="mce-EMAIL">Email Address</label>
-              <input type="email" value="" name="EMAIL" class="required email" id="mce-EMAIL" required>
-              <span id="mce-EMAIL-HELPERTEXT" class="helper_text"></span>
-            </div>
-            <div id="mce-responses" class="clear foot">
-              <div class="response" id="mce-error-response" style="display:none"></div>
-              <div class="response" id="mce-success-response" style="display:none"></div>
-            </div>
-            <div style="position: absolute; left: -5000px;" aria-hidden="true"><input type="text"
-                name="b_048d7c09b5ea13b09579d6fa1_51d2c0ad23" tabindex="-1" value=""></div>
-            <div class="optionalParent">
-              <div class="clear foot">
-                <input type="submit" value="Subscribe" name="subscribe" id="mc-embedded-subscribe" class="button">
-              </div>
-            </div>
-          </div>
-        </form>
-      </div> -->
     </div>
-  
   </div>
 
   <script>
