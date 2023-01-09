@@ -19,12 +19,12 @@
     /* https://coolors.co/palette/eef0f2-c8c9cb-bee8e5-3d736e-1e3937 */
     :root {
       --background-body: #1e3937;
-      --background: #1e3937;
-      --background-alt: #3d736e;
+      --background: #3d736e;
+      --background-alt: #1e3937;
       --text-main: #c8c9cb;
       --text-bright: #eef0f2;
       --text-muted: #c8c9cb;
-      --form-placeholder: #6d6e70;
+      --form-placeholder: #c8c9cb;
       --scrollbar-thumb: #c8c9cb;
       --scrollbar-thumb-hover: #eef0f2;
       --links: #bee8e5;
@@ -47,6 +47,7 @@
       border-radius: 9999px;
       max-width: 200px;
       flex-grow: 1;
+      font-weight: bold;
     }
 
     .content {
@@ -89,7 +90,32 @@
 </head>
 
 <body>
-  <img src="logo-with-text.svg" style="height: 2.5em;"/>
+  <div style="display: flex; justify-content: space-between; align-items: flex-end;">
+    <img src="logo-with-text.svg" style="height: 2.5em;" />
+    <div id="infoButton" style="background-color: var(--background); width: 2em; height: 2em; text-align: center; line-height: 2em; border-radius: 999px; user-select: none; cursor: pointer; font-weight: bold;">?</div>
+    <dialog id="infoDialog">
+      <header><h2 style="margin: 0;">About</h2></header>
+      <h3>Who made this?</h3>
+      <p>deen.ai is developed and maintained by me, <a href="https://yousefamar.com" target="_blank">Yousef</a>, in collaboration with <a href="https://sawa.global" target="_blank">Sawa</a> (it's not a coincidence that the colour scheme is the same)! Our mission is to leverage tech to empower all Muslims. The goal of deen.ai specifically is to explore how we can use the recent AI innovations to further this mission. The code for this website is open source and <a href="https://github.com/yousefamar/deen-ai" target="_blank">available on GitHub</a>. Feel free to email me at any time through <a href="mailto:salam@deen.ai?subject=Salam!&body=Salam%20Yousef%2C%0D%0A%0D%0A" target="_blank">salam@deen.ai</a>.</p>
+      <h3>Privacy note</h3>
+      <p>I'm not a lawyer, so in English: deen.ai does not track you or collect any personal data. We store the questions and answers anonymously for the purpose of improving the model (especially to avoid incorrect answers) and if you sign up for the mailing list, then <a href="https://convertkit.com/" target="_blank">ConvertKit</a> stores your email address. Your email address will never be shared with third parties.</p>
+      <h3>How is this free?</h3>
+      <p>At the moment, I'm bootstrapping the infrastructure for deen.ai out of my own pocket. If it becomes too expensive to run, I'll try to fund it through donations insha'Allah. Deen.ai may never generate profit, but with your support, may it generate thawaab for us all through the dawah it enables. Ameen.</p>
+      <div class="flex-row justify-center w-full" style="margin-top: 32px;">
+        <button id="closeButton" style="flex-grow: 1; max-width: 400px; background-color: var(--background);">OK</button>
+      </div>
+    </dialog>
+    <script>
+      document.querySelector('#infoButton').addEventListener('click', () => {
+        document.querySelector('#infoDialog').showModal();
+        // don't focus on button
+        document.querySelector('#infoDialog').querySelector('a').blur();
+      });
+      document.querySelector('#closeButton').addEventListener('click', () => {
+        document.querySelector('#infoDialog').close();
+      });
+    </script>
+  </div>
 
   <div style="position: relative; width: 100%;">
     <div id="page-1" class="content">
