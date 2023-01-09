@@ -258,7 +258,7 @@
       document.getElementById('page-2').classList.remove('hidden');
 
       const promptEl = document.getElementById('prompt');
-      const prompt = promptEl.value;
+      const prompt = promptEl.value = promptEl.value.trim();
       // promptEl.value = '';
       // document.getElementById('askButton').disabled = true;
       let answer;
@@ -284,6 +284,13 @@
 
       document.getElementById('page-2').classList.add('hidden');
       document.getElementById('page-3').classList.remove('hidden');
+    });
+
+    document.getElementById('prompt').addEventListener('keyup', e => {
+      if (e.keyCode === 13) {
+        e.preventDefault();
+        document.getElementById('askButton').click();
+      }
     });
 
   </script>
