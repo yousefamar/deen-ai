@@ -165,25 +165,35 @@
       return new Blob([new Uint8Array(array)], { type: 'image/png' });
     }
 
-    document.getElementById('shareButton').addEventListener('click', e => {
+    document.getElementById('shareButton').addEventListener('click', async e => {
       e.preventDefault();
 
       const canvas = document.getElementById('shareCanvas');
       const dataURL = canvas.toDataURL('image/png');
 
-      if (navigator.share) {
-        const blob = dataURItoBlob(dataURL);
-        navigator.share({
-          title: 'deen.ai',
-          text: 'deen.ai, an islamic AI, answered my question!',
-          files: [ blob ],
-        });
-      } else {
-        const a = document.createElement('a');
-        a.href = dataURL;
-        a.download = 'deen-ai.png';
-        a.click();
+      if (navigator.share && navigator.canShare) {
+        const blob = await (await fetch(dataURL)).blob();
+        const file = new File(
+          [blob],
+          'deen-ai.png',
+          {
+            type: blob.type,
+            lastModified: new Date().getTime()
+          }
+        );
+        if (navigator.canShare({ files: [ file ] })) {
+          navigator.share({
+            title: 'deen.ai',
+            text: 'deen.ai, an islamic AI, answered my question!',
+            files: [file],
+          });
+          return;
+        }
       }
+      const a = document.createElement('a');
+      a.href = dataURL;
+      a.download = 'deen-ai.png';
+      a.click();
     });
 
     const computeFontSize = (ctx, text, x, y, width, maxHeight) => {
